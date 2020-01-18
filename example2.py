@@ -1,14 +1,8 @@
-dfsd
-ghdbtn
-
-ghdbtn
-
-ghdbtn
-
-ghdbtn
-
-ghdbtn
-
-ghdbtn
-
-ghdbtn
+print('Hello, World!')
+print('Hello, World!')
+print('Hello, World!')
+print('Hello, World!')
+print('Hello, World!')
+print('Hello, World!')
+print('Hello, World!')
+print('Hello, World!')
