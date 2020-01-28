@@ -41,30 +41,22 @@ def dir_by_the_number():
     :return:
     '''
     while True:
-        num_doc = input('Введите номер документа:')
-        print(directories.values())
+        num_doc = input('Для выхода нажмите ENTER            Введите номер документа: ')
+        my_val = ''
+        if num_doc == '':
+            break
         for i in directories.values():
             for j in i:
-                print(f'j и i    {j}   {i}')
                 if num_doc == j:
                     my_val = i
-        print('Нужный мне список: ', my_val)
-
+                    break
+        if my_val == '':
+            print('В архиве отсутствует документ под таким номером')
+            continue
         for k,v in directories.items():
             if v == my_val:
                 dir = k
-        print('Все добро лежит на ' + k + '-й полке')
-
-                #print(directories.get(i))
-        # #directories.values() :
-        #     print('В архиве отсутствует документ под таким номером')
-        #     print('q - Выйти в меню, ENTER - повторить поиск')
-        #     user_click = input().lower()
-        #     if user_click == 'q':
-        #         break
-        # else:
-        #     print('Документ № ' + str(num_doc) + ' хранится на ' + directories.keys() + 'полке')
-
+        print('Этот документ хранится на ' + dir + '-й полке')
 
 
 def menu_click():
