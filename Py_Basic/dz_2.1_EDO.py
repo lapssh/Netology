@@ -54,7 +54,7 @@ def dir_by_the_number():
             if v == my_val:
                 dir = k
         print('Все добро лежит на ' + k + '-й полке')
-
+'
                 #print(directories.get(i))
         # #directories.values() :
         #     print('В архиве отсутствует документ под таким номером')
