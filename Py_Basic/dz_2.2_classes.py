@@ -1,10 +1,16 @@
 import random
 
-
 class Animal: #Родительский класс для всех животинок на ферме
     def __init__(self, name, weight):
         self.name = name
         self.weight = weight
+        self.all_weight.append(weight)
+        self.dict_of_weight [self.name] = self.weight
+
+
+    # def list_all_weight(self,new_weight):
+    #     all_weight.append(new_weight)
+
 
     def feed(self):
         """
@@ -16,6 +22,8 @@ class Animal: #Родительский класс для всех животи�
         print(f'Животинка {self.name} покушала и сказала {self.golos}')
         print(f'К тому же немного потолстела  на {fat} килогамма')
     golos = '*(&^*&^#@'
+    all_weight = []
+    dict_of_weight = dict()
 
 class Goose(Animal):
     golos = 'Га-га-га.....'
@@ -105,10 +113,17 @@ sheep02.feed()
 sheep01.shear_sheep()
 sheep02.shear_sheep()
 
-# Считаем общий вес животных на ферме
-all_weight = goose_grey.weight + goose_white.weight + chicken01.weight + chicken02.weight + (
-        duck01.weight + cow01.weight + goat01.weight + goat02.weight + sheep01.weight + sheep02.weight
-)
-all_weight = round(all_weight, 1)
 print('-----------------------------------------------------------------------------------')
-print(f'Вес всех животинок на ферме уже перевалил за {all_weight} килограмм.')
+
+
+max_weight = 0
+name_of_max = ''
+total_weight = 0
+for key,value in Animal.dict_of_weight.items():
+    if value > max_weight:
+        name_of_max = key
+        max_weight = value
+    total_weight += value
+
+print(f'Вес всех животинок на ферме: {total_weight} килограмм.')
+print(f'А самая жирненькая у нас - {name_of_max}, её вес составляет {max_weight} килограмм.')
