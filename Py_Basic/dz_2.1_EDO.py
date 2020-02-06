@@ -1,7 +1,8 @@
 documents = [
     {"type": "passport", "number": "2207 876234", "name": "Василий Гупкин"},
     {"type": "invoice", "number": "11-2", "name": "Геннадий Покемонов"},
-    {"type": "insurance", "number": "10006", "name": "Аристарх Павлов"}
+    {"type": "insurance", "number": "10006", "name": "Аристарх Павлов"},
+    {"type": "passport", "number": "666666"}
 ]
 
 directories = {
@@ -18,6 +19,7 @@ def menu():
     print('=  l   -   list    - Вывести список всех документов                    =')
     print('=  s   -   shelf   - Вывести номер полки по номеру документа           =')
     print('=  a   -   add     - Добавить новый документ                           =')
+    print('=  n   -   names   - Ввести имена владельцев всех документов           =')
     print('=  q   -   quit    - Завершить работу                                  =')
     print('========================================================================')
 
@@ -31,10 +33,13 @@ def find_people_by_doc():
         return('ВНИМАНИЕ!! Человек с таким номером документа не зарегистрирован в системе.')
 def list_all_docs():
        #print('========================================================================')
-    for document in documents:
-        print('Тип документа: ' + document['type'] + '  Номер: ' + document['number'] + '  Имя: ' + document['name'])
-    input('Для продолжения нажмите ENTER')
+    try:
 
+        for document in documents:
+            print('Тип документа: ' + document['type'] + '  Номер: ' + document['number'] + '  Имя: ' + document['name'])
+        input('Для продолжения нажмите ENTER')
+    except KeyError:
+        print(f'Внимание! У {document} нет записи о владельце!')
 def dir_by_the_number():
     '''
     s – shelf – команда, которая спросит номер документа и выведет номер полки, на которой он находится;
@@ -65,11 +70,17 @@ def dir_by_the_number():
         # else:
         #     print('Документ № ' + str(num_doc) + ' хранится на ' + directories.keys() + 'полке')
 
+def names_all_docs():
+    try:
+        for doc in documents:
+            print(doc['name'])
+    except KeyError:
+        print(f'Внимание! У документа {doc} отстутсвует запись о владельце!!!')
 
 
 def menu_click():
     while True:
-        correct_click = ['p', 'l', 's', 'a', 'q']
+        correct_click = ['p', 'l', 's', 'a', 'q', 'n']
         click = input('Выберите действие:').lower()
         if click not in correct_click:
             print('Ошибка ввода, повторите ввод: ')
@@ -89,4 +100,6 @@ while True:
         list_all_docs()
     elif click == 's':
         dir_by_the_number()
+    elif click == 'n':
+        names_all_docs()
 
