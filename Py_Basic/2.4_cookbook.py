@@ -34,16 +34,32 @@ def get_shop_list_by_dishes(dishes, person_count):
 
 
 def output_for_humans(shop_list, person_count):
+    print(40* '=')
     print(f'Мы пригласили на ужин {person_count} человек.')
     print('А значит нам пора отправлятся за покупками.')
-    print('Что бы приготовить наши блюда нам потребуется:')
+    print(f'Что бы приготовить {dishes} нам потребуется:')
+    print(40* '=')
     for ingr, value in shop_list.items():
         print(f'{ingr} в колличестве {value["quantity"]} {value["measure"]}')
 
-
+def choice_of_dishes():
+    print('На данный момент в нашей книге рецептов есть следующие блюда: ')
+    list_of_dieshes = []
+    counter = 1
+    my_dishes = []
+    while True:
+        for dish, value in cook_book.items():
+            print(f'{counter} - {dish} ')
+            counter += 1
+            list_of_dieshes.append(dish)
+        num_of_dish = input('Введите номер блюда, которое планиурется приготовить (ENTER - закончить ввод): ')
+        if num_of_dish == '':
+            break
+        my_dishes.append(list_of_dieshes[int(num_of_dish)-1])
+    return my_dishes
 cook_book = read_recipes('recipes.txt')
-dishes = ['Запеченный картофель', 'Омлет']
-# person_count = int(input('Введите количество персон: '))
-person_count = 2
+dishes = choice_of_dishes()
+person_count = int(input('Введите количество персон: '))
 shop_list = get_shop_list_by_dishes(dishes, person_count)
 output_for_humans(shop_list, person_count)
+print('\n P.S. Не забудь - деньги в бидончике.')
