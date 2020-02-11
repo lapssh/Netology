@@ -32,7 +32,7 @@ def mat_generate():
     alphabet = list('абвгдеёжзийклмнопрстуфхцчшщьъэюя')
     print(len(alphabet))
     print(alphabet)
-    mat = 'жопа'
+    mat = 'лажа'
     count = 0
     while True:
         for i in range(0,3):
