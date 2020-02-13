@@ -30,30 +30,24 @@ def mega_random(n):
 
 def mat_generate():
     alphabet = list('абвгдеёжзийклмнопрстуфхцчшщьъэюя')
-    print(len(alphabet))
-    print(alphabet)
-    mat = 'сукаблять'
+    mat = 'лажа'
     count = 0
     while True:
         for i in range(0,3):
             slovo = (alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)]+ alphabet[random.randint(0,31)]
-                + alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)]
-                     + alphabet[random.randint(0, 31)] + alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)]                     )
+                + alphabet[random.randint(0,31)])
             count += 1
         if mat == slovo:
-            print('Попыток было ', count)
+            print(f'Попыток изобрести слово "{mat}" было: ', count)
             return slovo
 
-
-
-
 with Mylog ('myfile.txt') as file:
-
     start_time = datetime.datetime.now()
-    print(mat_generate())
+    mat_generate()
     finish_time = datetime.datetime.now()
     time_to_calculate = finish_time-start_time
     print(f'Изобретение этого слова потребовало {time_to_calculate}')
+    print('-' * 30)
     start_time = datetime.datetime.now()
     print('Программа начала своё выполнение в ', start_time)
     file.write(str(start_time)+ '\n')
@@ -64,9 +58,9 @@ with Mylog ('myfile.txt') as file:
     print(f'Факториал числа 99999 данная программа вычисляет за {time_to_calculate} секунды')
     print(f'Программа завершила свою работу ровно в : {finish_time}')
     file.write(str(start_time.minute) + '  ' + str(start_time.second) + '123\n')
-
+    print('-' * 30)
     n = 1000000
-    print('А теперь пуская железяка попробует отгадать случайно число от 0 до ', n)
+    print('А теперь, пускай железяка попробует отгадать случайное число от 0 до', n)
     start_time = datetime.datetime.now()
     secret, score  = mega_random(n)
     finish_time = datetime.datetime.now()
