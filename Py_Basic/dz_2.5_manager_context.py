@@ -32,12 +32,13 @@ def mat_generate():
     alphabet = list('абвгдеёжзийклмнопрстуфхцчшщьъэюя')
     print(len(alphabet))
     print(alphabet)
-    mat = 'лажа'
+    mat = 'сукаблять'
     count = 0
     while True:
         for i in range(0,3):
             slovo = (alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)]+ alphabet[random.randint(0,31)]
-                + alphabet[random.randint(0,31)])
+                + alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)]
+                     + alphabet[random.randint(0, 31)] + alphabet[random.randint(0,31)] + alphabet[random.randint(0,31)]                     )
             count += 1
         if mat == slovo:
             print('Попыток было ', count)
