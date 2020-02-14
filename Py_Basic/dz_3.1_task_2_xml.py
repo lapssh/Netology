@@ -1,12 +1,16 @@
 # Написать программу, которая будет выводить топ 10 самых часто встречающихся
 # в новостях слов длиннее 6 символов для каждого файла.
-import xml
+import xml.etree.ElementTree as ET
+import pprint
 
 def read_xml(filename): # Считываем данные из переданного xml файла
-    json_data = dict()
-    with open(filename, 'r', encoding='utf-8') as f:
-        json_data = json.load(f)
-    return json_data
+    xml_data = dict()
+    tree = ET.parse(filename)
+    pprint(tree)
+    news_el = tree.fi
+    # with open(filename, 'r', encoding='utf-8') as f:
+    #     json_data = json.load(f)
+    return xml_data
 
 def take_news(text): # Вырезаем из xml только новости и конкатениируем в одну строку
     root = text['rss']['channel']['items']
@@ -46,7 +50,7 @@ def print_top_10_words(top10):
     for i in top10:
         print(f'Слово "{i[0]}" встречалось {i[1]} раз')
 
-filename = 'newsafr.json'
+filename = 'newsafr.xml'
 xml_data = read_xml(filename)
 news = take_news(xml_data)
 top10_words = get_top_10_words(news)
