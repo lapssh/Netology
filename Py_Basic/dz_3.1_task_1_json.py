@@ -2,20 +2,20 @@
 # в новостях слов длиннее 6 символов для каждого файла.
 import json
 
-def read_json(filename):
+def read_json(filename): # Считываем данные из переданного json файла
     json_data = dict()
     with open(filename, 'r', encoding='utf-8') as f:
         json_data = json.load(f)
     return json_data
 
-def take_news(text):
+def take_news(text): # Вырезаем из json только новости и конкатениируем в одну строку
     root = text['rss']['channel']['items']
     news = ''
     for one_news in root:
         news = news + '\n' + one_news['description']
     return news
 
-def get_top_10_words(news):
+def get_top_10_words(news): # отбираем топ 10 слов длиннее 6 символов
     word_list = news.split()
     big_word_list = list()
     for word in word_list:
@@ -31,17 +31,16 @@ def get_top_10_words(news):
             words_counter[word] += 1
     # Создаем пустой список для ТОП10 слов
     top10_words_list = list()
-
-    # Получаем слово с максимальным счетчиком, вносим в топ и удаляем изх словаря.
+    # Получаем слово с максимальным счетчиком, вносим в топ и удаляем из словаря.
     for i in range (10):
         max_value = max(words_counter.values())
         final_dict = [k for k, v in words_counter.items() if v == max_value]
         top10_words_list.append([final_dict[0], max_value])
         del words_counter[top10_words_list[-1][0]]
 
-    return top10_words_list, words_counter
+    return top10_words_list
 
-def print_top_10_words(top10,words_counter):
+def print_top_10_words(top10):
     print('Внимательно и вдумчиво изучив все африканские новости, мы пришли к выводу,\n'
           'что чаще всего в новостях встречются следующие 10 слов:\n')
     for i in top10:
@@ -50,5 +49,5 @@ def print_top_10_words(top10,words_counter):
 filename = 'newsafr.json'
 json_data = read_json(filename)
 news = take_news(json_data)
-top10_words, words_counter = get_top_10_words(news)
-print_top_10_words(top10_words,words_counter)
+top10_words = get_top_10_words(news)
+print_top_10_words(top10_words)
