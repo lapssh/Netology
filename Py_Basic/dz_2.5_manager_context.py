@@ -12,13 +12,13 @@ class Mylog:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.file.close()
 
-def factorial_n(n):
+def factorial_n(n): # Вычисление факториала числа n
     res = 1
     for i in range(1, n+1):
         res *= i
     return res
 
-def mega_random(n):
+def mega_random(n): # Функция где программа сама себе загадывает число
     count_n = 0
     secret_number = random.randint(1, n)
     while True:
@@ -28,7 +28,7 @@ def mega_random(n):
             print("Число неудачных попыток: ", count_n)
             return secret_number, count_n
 
-def mat_generate():
+def mat_generate(): # Генератор слов
     alphabet = list('абвгдеёжзийклмнопрстуфхцчшщьъэюя')
     mat = 'лажа'
     count = 0
