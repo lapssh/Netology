@@ -4,20 +4,15 @@ import xml.etree.ElementTree as ET
 import pprint
 
 def read_xml(filename): # Считываем данные из переданного xml файла
-    xml_data = dict()
     tree = ET.parse(filename)
-    pprint(tree)
-    news_el = tree.fi
-    # with open(filename, 'r', encoding='utf-8') as f:
-    #     json_data = json.load(f)
-    return xml_data
-
-def take_news(text): # Вырезаем из xml только новости и конкатениируем в одну строку
-    root = text['rss']['channel']['items']
+    root = tree.getroot()
+    items = root.findall('channel/item')
     news = ''
-    for one_news in root:
-        news = news + '\n' + one_news['description']
+    for item in items:
+        news = news + '\n' +item.find('description').text
+
     return news
+
 
 def get_top_10_words(news): # отбираем топ 10 слов длиннее 6 символов
     word_list = news.split()
@@ -51,7 +46,6 @@ def print_top_10_words(top10):
         print(f'Слово "{i[0]}" встречалось {i[1]} раз')
 
 filename = 'newsafr.xml'
-xml_data = read_xml(filename)
-news = take_news(xml_data)
+news = read_xml(filename)
 top10_words = get_top_10_words(news)
 print_top_10_words(top10_words)
