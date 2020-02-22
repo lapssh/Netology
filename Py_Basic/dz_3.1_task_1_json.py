@@ -20,7 +20,7 @@ def get_top_10_words(news): # отбираем топ 10 слов длиннее
     big_word_list = list()
     for word in word_list:
         if len(word) > 6:
-            big_word_list.append(word)
+            big_word_list.append(word.lower())
     sorted_words_list = sorted(big_word_list)
     #создаем словарь формата СЛОВО : количество вхождений
     words_counter = dict()
