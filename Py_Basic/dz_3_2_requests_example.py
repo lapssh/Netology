@@ -36,8 +36,9 @@ def upload(file_name):
     with open(file_name, 'rb') as d_file:
         data = d_file.read()
         res = requests.put(URL, data=data)
-        print(f'Файл: {file_name} скопирован на Яндекс.Диск \n')
+        print(f'Файл: {file_name} скопирован на Яндекс.Диск')
         print('Рузельтат перевода доступен по этому адресу: https://yadi.sk/d/g-8c6xyTb7egjA')
+        print()
 
 
 def translate_it(file_name_gibberish, file_name_translate, from_lang, to_lang = 'ru'):
@@ -52,6 +53,7 @@ def translate_it(file_name_gibberish, file_name_translate, from_lang, to_lang = 
     :param to_lang:
     :return:
     """
+    print('Переведено сервисом «Яндекс.Переводчик» http://translate.yandex.ru.')
     with open(file_name_gibberish, encoding='utf-8') as f:
         text = f.read()
 
