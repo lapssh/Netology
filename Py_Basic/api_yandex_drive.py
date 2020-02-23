@@ -1,22 +1,30 @@
-#  AgAAAAAjPcXKAADLW2Vd5_LN5kb3qIhAlLj4hcc
 import requests
 import OAuth_TOKEN
 from pprint import pprint
 
 # функция загрузки файлов
 def upload(file_name):
-    pprint('ест принта')
     TOKEN = OAuth_TOKEN.get_token()
-    url = f'https://cloud-api.yandex.net/v1/disk/resources/upload?path={file_name}'
+    url = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
+    params = {
+        'path' : 'translate_files/' + file_name,
+        'overwrite': 'True'
+    }
     headers = {'Authorization': TOKEN,
                'Accept': 'application/json',
-               'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
-    session = requests.Session()
-    request = session.get(url, headers=headers)
-    pprint(request.text)
-    print(request.status_code)
+               }
 
-#res = requests.get(URL + '/v1/disk/resources/upload?test.txt', params=params)
+    path_file = 'recipes.txt'
+    request = requests.get(url, params=params, headers=headers)
+    URL = request.json()['href']
+    print(URL)
+    with open(path_file, 'rb') as d_file:
+        data = d_file.read()
+        res = requests.put(URL, data=data)
+        print(f'Файл: {path_file} скопирован на Яндекс.Диск {res}\n')
+        print('Доступно по этому адресу: https://yadi.sk/d/g-8c6xyTb7egjA')
+        pprint(res.text)
+        print(res.status_code)
 
 file_name = 'recipes.txt'
 upload(file_name)
