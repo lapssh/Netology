@@ -4,7 +4,7 @@ import requests
 TOKEN = private_vk_settings.access_token
 params = {
     'access_token': TOKEN,
-    'v': '5.95'
+    'v': '5.103'
 }
 
 
@@ -64,16 +64,9 @@ class User:
         """
         Функция сделана для проверки результата средствами API самой VK
         """
-        params = {
-            'access_token': self.token,
-            'v': '5.95',
-            'source_uid': source_uid,
-            'target_uid': target_uid
-        }
-        response = requests.get(
-            'https://api.vk.com/method/friends.getMutual',
-            params
-        )
+        params['source_uid'] =  source_uid
+        params['target_uid'] = target_uid
+        response = requests.get('https://api.vk.com/method/friends.getMutual', params)
         return response.json()
 
     def print_user_info(self):
@@ -98,5 +91,5 @@ print(alexey.friend_list)
 mero.print_user_info()
 # print result
 print(alexey & mero)
-# print users profile
+# print user profile
 print(alexey)
