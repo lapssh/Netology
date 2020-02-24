@@ -1,4 +1,10 @@
-sys_stdin = [12,54,23,6,34,54,76,4,2]
-print(min([x for x in sys_stdin if x % 2 == 0]))
-
-if ingredient['ingredient_name'] in shop_list:
+random_list = ['2018-01-01', 'yandex', 'cpc', 100,6,5,4,'12']
+deep_dict = {}
+deep_dict[random_list[-2]] = random_list[-1]
+random_list.pop()
+random_list.pop()
+new_dict = {}
+for i in reversed(random_list):
+    new_dict = {i : deep_dict}
+    deep_dict = new_dict
+print(new_dict)
