@@ -96,6 +96,7 @@ mero = User(TOKEN, '13323484')
 alexey.print_user_info()
 print(alexey.friend_list)
 mero.print_user_info()
-my_test_list = alexey & mero
-print(my_test_list[0].first_name)
+# print result
+print(alexey & mero)
+# print users profile
 print(alexey)
