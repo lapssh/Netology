@@ -5,7 +5,7 @@ for root, dirs, files in os.walk("M://Garbage/ais"):
     for filename in files:
         if filename[-3:] == '.cs':
             files_count += 1
-            # print(filename)
+            print(filename)
             qqq = os.path.join(root, filename)
             my_file_name = qqq.replace('\\', '/')
             with open(my_file_name,'rt', encoding='utf-8') as f:
