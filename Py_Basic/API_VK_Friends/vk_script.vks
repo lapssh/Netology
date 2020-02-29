@@ -1,0 +1,32 @@
+var groupList = Args.list.split(",");
+var groups=API.groups.get();
+return groupList;
+//var q = Args.q;
+//var count = Args.count;
+//
+//var groups = API.groups.search({
+//    "q": q,
+//    "count": count
+//});
+//
+//var result = [];
+//
+//if (groups.length == 0) {
+//    return [];
+//} else {
+//    // Все, что добавляется в results в этом цикле - не доступно при вызове.
+//    // При чем, если вызывать процедуру в окружении ВК - все работает.
+//    var i = 0;
+//    while (i < groups.items.length) {
+//        var members = API.groups.getMembers({
+//            "group_id": groups.items[i].id,
+//            "count": 0
+//        }).count;
+//        result = result + [{
+//            "group": groups.items[i],
+//            "members": members
+//        }];
+//        i = i + 1;
+//    }
+//    return result;
+//}
