@@ -1,6 +1,5 @@
-var groupList = Args.list.split(",");
 var groups=API.groups.get();
-return groupList;
+return groups;
 //var q = Args.q;
 //var count = Args.count;
 //
