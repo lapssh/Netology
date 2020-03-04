@@ -3,12 +3,12 @@ import time
 import json
 from pprint import pprint
 import private_vk_settings
-import os
-import traceback
 
-timeout_count  = 0  # счетчик ошибок по таймату
+timeout_count = 0  # счетчик ошибок по таймату
 closed_profile_count = 0  # счетчик закрытых профилей
 closed_groups = 0  # счетчик закрытых групп
+deleted_profile_count = 0  # счетчик удаленных или забаненных пользователей
+
 
 def get_params():
     return dict(
@@ -28,9 +28,6 @@ def check_id():
         params['user_ids'] = id
         response = requests.get('https://api.vk.com/method/users.get', params)
         try:
-            # if response.json()['response'][0]['is_closed'] == True:
-            #     print('У пользователя профиль закрыт, получить данные не возможно, попробуйте с другим id.')
-            #     continue
             print('Найден пользователь:')
             print('Имя: ', response.json()['response'][0]['first_name'])
             print('Фамилия: ', response.json()['response'][0]['last_name'])
@@ -46,6 +43,7 @@ def get_list_of_groups(id):
     """
     global closed_profile_count
     global timeout_count
+    global deleted_profile_count
     params = get_params()
     params['user_id'] = id
     params['extended'] = 1
@@ -56,16 +54,20 @@ def get_list_of_groups(id):
             if response.json()['error']['error_code'] == 6:
                 timeout_count += 1
                 return 'timeout'
-                # with open('err_log.txt', 'at', encoding='utf-8') as f:
-                #     print('\nух ты - поймал таймаут')
-                #     f.write(f'\nНа {user_id}: превышен лимит запросов')
 
         return response.json()['response']['items']
     except:
-        print(response.json())
-        print('\nУ пользователя с id', id, 'закрытый профиль, пропускаем....')
-
-        closed_profile_count += 1
+        if response.json()['error']['error_code'] == 18:
+            print(f'\nПользователь {id} удален или забанен')
+            deleted_profile_count += 1
+        elif response.json()['error']['error_code'] == 7:
+            print('\nУ пользователя с id', id, 'закрытый профиль, пропускаем....')
+            closed_profile_count += 1
+        elif response.json()['error']['error_code'] == 30:
+            print('\nУ пользователя с id', id, 'закрытый профиль. Получить данные не возможно')
+        else:
+            print('\nПоймал неучтенную ошибку:')
+            print(response.json())
 
         return []
 
@@ -95,8 +97,8 @@ def create_set_of_grups(id):
                 continue
         except:
             print('\nВозникло исключение на пользователе', friend)
-        #time.sleep(0.35)
-        time.sleep(0.05)
+
+        time.sleep(0.35)
         decore_counter = 0
         for group in friend_groups:
             try:
@@ -121,41 +123,43 @@ def create_set_of_grups(id):
 
 # TASK: Вывести список групп в ВК в которых состоит пользователь, но не состоит никто из его друзей.
 if __name__ == '__main__':
-    # f1 = open('err_log.txt', 'w' , encoding='utf-8')
-    # f1.write(' ')
-    # f1.close()
+    while True:
+        user_token = input('Укажите токен доступа (ENTER) - для токена по умолчанию: ')
+        if user_token == '':
+            token = private_vk_settings.victim_token
+        else:
+            token = user_token
+        params = get_params()
+        response = requests.get('https://api.vk.com/method/users.get', params)
+        try:
+            if response.json()['error']['error_code'] == 5:
+                print('Указан нерабочий токен, повторите ввод.')
+                continue
+        except:
+            print('Токен рабочий')
+        print(response.json())
 
+        break
 
-    #os.remove('err_log.txt')
-    # token = '73eaea320bdc0d3299faa475c196cfea1c4df9da4c6d291633f9fe8f83c08c4de2a3abf89fbc3ed8a44e1'
-    token = private_vk_settings.victim_token
-    # token = private_vk_settings.diplom_token
-    # victim = 'https://vk.com/eshmargunov' 171691064
-    # ceridan 229346
-    # onega 267357
-    # id_shmargunov = '171691064'
     set_of_groups = set()
     name_gid_members_count = dict()
-
-    # id_shmargunov = '171691064'
 
     id = check_id()
 
     friends_victim = get_friens_by_id(id)
     victim_groups = get_list_of_groups(id)
-    print(victim_groups)
     set_of_victim = set()
     for group in victim_groups:
         group_name = group['name']
         group_id = group['id']
-        group_members_count = group['members_count']
+        try:
+            group_members_count = group['members_count']
+        except:
+            print('\nГруппа забанена', group)
         set_of_victim.add((group_id, group_name, group_members_count))
     if victim_groups != []:
         set_of_groups = create_set_of_grups(id)
-    print('\nВсе сообщества:')
-    print(set_of_groups)
-    print()
-    print('Сообщества жертвы:')
+    print('\nСообщества жертвы:')
     print(set_of_victim)
     print()
     diff_groups = set_of_victim - set_of_groups
@@ -171,7 +175,8 @@ if __name__ == '__main__':
     pprint(diff_groups)
     with open('groups.json', 'w', encoding='utf-8') as f:
         f.write(json.dumps(js_data, ensure_ascii=False))
-    print('\nСчетчик ошибок по таймауту: ', timeout_count)
-    print('Счетчик закрытых профилей: ', closed_profile_count)
-    print('Счетчик закрытых групп: ', closed_groups)
+    print('\nОшибок по таймауту: ', timeout_count)
+    print('Закрытых профилей: ', closed_profile_count)
+    print('Закрытых групп: ', closed_groups)
+    print(('Удаленных (забаненных пользователей):'), deleted_profile_count)
     print('\nДанные сохранены в файле "groups.json"')
