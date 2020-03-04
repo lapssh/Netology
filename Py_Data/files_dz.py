@@ -1,5 +1,7 @@
 import json
 import os
+
+
 purchases = {}
 with open('purchase_log.txt', 'r+', encoding = 'utf-8') as f:
     i = 0
