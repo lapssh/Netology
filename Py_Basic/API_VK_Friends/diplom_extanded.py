@@ -1,3 +1,4 @@
+# Diploma v 2.1
 import requests
 import time
 import json
