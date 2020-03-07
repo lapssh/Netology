@@ -1,4 +1,4 @@
-# Diploma v 2.1
+# Diploma v 2.2
 import requests
 import time
 import json
@@ -13,7 +13,7 @@ deleted_profile_count = 0  # счетчик удаленных или забан
 
 def get_params():
     return dict(
-        access_token=token,
+        access_token=TOKEN,
         v='5.103'
     )
 
@@ -127,9 +127,9 @@ if __name__ == '__main__':
     while True:
         user_token = input('Укажите токен доступа (ENTER) - для токена по умолчанию: ')
         if user_token == '':
-            token = private_vk_settings.victim_token
+            TOKEN = private_vk_settings.victim_token
         else:
-            token = user_token
+            TOKEN = user_token
         params = get_params()
         response = requests.get('https://api.vk.com/method/users.get', params)
         try:
@@ -145,10 +145,10 @@ if __name__ == '__main__':
     set_of_groups = set()
     name_gid_members_count = dict()
 
-    id = check_id()
+    ID = check_id()
 
-    friends_victim = get_friens_by_id(id)
-    victim_groups = get_list_of_groups(id)
+    friends_victim = get_friens_by_id(ID)
+    victim_groups = get_list_of_groups(ID)
     set_of_victim = set()
     for group in victim_groups:
         group_name = group['name']
