@@ -6,3 +6,13 @@ for i in test_mails:
         print(i, '- соответствует')
     else:
         print(i, '- не соответствует')
+
+z = 30
+for n in range(30):
+    if n > 10:
+        z = z - n
+        print(z)
+    else:
+        z = z + n
+        print(z)
+print(z)
