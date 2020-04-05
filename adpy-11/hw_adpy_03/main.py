@@ -1,6 +1,3 @@
-from pprint import pprint
-
-
 class Contact:
     def __init__(self, first_name, last_name, number, favorite_contact=False, **kwargs):
         self.first_name = first_name
@@ -22,7 +19,8 @@ class Contact:
 
 
 class PhoneBook:
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.contacts = {}
 
     def add_new_contact(self, first_name, last_name, number, favorite_contact=False, **kwargs):
@@ -54,11 +52,12 @@ class PhoneBook:
                     return
         print('В наших записях такой нет данных на: ', first_name, ' ', last_name)
 
+
 if __name__ == '__main__':
     jhon = Contact('Jhon', 'Smith', '+71234567809', favorite_contact=True, telegram='@jhony', email='jhony@smith.com')
     print(jhon)
 
-    my_phone_book = PhoneBook()
+    my_phone_book = PhoneBook('IronMan')
     my_phone_book.add_new_contact('Sarah', 'Connor', '+792655544466', telegram='@connor', email='sarah@connor.ru')
     my_phone_book.add_new_contact('John', 'Connor', '+79115435555', telegram='@lead_minkind', email='john@connor.ru')
     my_phone_book.add_new_contact('Jhon', 'Smith', '+71234567809', telegram='@jhony', email='jhony@smith.com')
@@ -74,4 +73,3 @@ if __name__ == '__main__':
     my_phone_book.find_favorite_contacts()
     my_phone_book.find_by_first_name_and_lapst_name('John', 'Connor')
     my_phone_book.find_by_first_name_and_lapst_name('Электроник', 'Безымянный')
-
