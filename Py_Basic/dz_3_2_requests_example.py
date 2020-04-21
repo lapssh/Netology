@@ -1,6 +1,6 @@
 import requests
 import os
-import OAuth_TOKEN
+import OAUTH_TOKEN
 
 #  документация https://yandex.ru/dev/translate/doc/dg/reference/translate-docpage/
 
@@ -20,7 +20,7 @@ def upload(file_name):
     """
     Функция загружает переданный файл на Яндекс.Диск
     """
-    TOKEN = OAuth_TOKEN.get_token()
+    TOKEN = OAUTH_TOKEN.OAUTH_TOKEN
     url = 'https://cloud-api.yandex.net/v1/disk/resources/upload'
     params = {
         'path' : 'translate_files/' + file_name,

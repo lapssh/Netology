@@ -1,3 +1,4 @@
+# Домашнее задание к лекции 2.1 «Функции — использование встроенных и создание собственных»
 import json
 import os
 
@@ -125,11 +126,6 @@ def add_new_doc():
     return new_doc_shelf_number
 
 
-def prepare_date():
-    global directories, documents
-    directories, documents = update_date()
-
-
 def secretary_program_start():
     """
     ap - (all people) - команда, которая выводит список всех владельцев документов
@@ -147,7 +143,8 @@ def secretary_program_start():
         'Вас приветствует программа помошник!\n',
         '(Введите help, для просмотра списка поддерживаемых команд)\n'
     )
-    prepare_date()
+    global directories, documents
+    directories, documents = update_date()
     while True:
         user_command = input('Введите команду - ')
         if user_command == 'p':
