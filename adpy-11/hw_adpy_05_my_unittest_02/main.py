@@ -28,10 +28,15 @@ def translate_it(text, from_lang, to_lang='ru'):
     }
 
     response = requests.get(URL, params=params)
-    json_ = response.json()['text']
+    json_ = response.json()
     return json_
 
 if __name__ == '__main__':
     from_lang = 'en'
-    print('Исходное слово: hello. Перевод: ',translate_it('hello', from_lang))
+    json_response = translate_it('hello', from_lang)
+    print('Исходное слово: hello. Перевод: ',json_response['text'][0])
     print('Переведено сервисом «Яндекс.Переводчик» http://translate.yandex.ru.')
+    print(json_response)
+    print(json_response['code'])
+    print(json_response['text'][0])
+
