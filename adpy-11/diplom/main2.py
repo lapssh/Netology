@@ -14,6 +14,7 @@ class User():
         self.api = api
         self.name = name
         self.get_data()
+        self.groups_get()
 
 
     def __str__(self):
@@ -50,7 +51,6 @@ class User():
         if 'bdate' not in self.user_info[0]:
             self.bdate = False
             self.age = False
-            print('У ', self.name, ' появился ', self.bdate)
         else:
             self.bdate = self.user_info[0]['bdate']
             try:
@@ -65,6 +65,14 @@ class User():
         # except Exception as er:
         #     print('Введён неккоректный ID или неккоректное короткое имя.', er)
 
+    def groups_get(self):
+        time.sleep(0.35)
+        try:
+            self.groups = self.api.groups.get(user_id=self.id)['items']
+            print('Получен список групп пользователя', self.id, ' ', self.groups)
+        except Exception as err:
+            print(err, ' - при попытке получить группы пользователя')
+            self.groups = []
 
     def get_mutual(self, target):
         #target = int(target)
@@ -74,6 +82,38 @@ class User():
         except Exception as err:
             print('Профиль ', self.id, ' закрыт, данные не получены')
             self.mutual_friends = False
+
+    def calc_kpi(self, target):
+        """Метод находит общее между пользователем и объектом исследования на основе следующей системы весов
+        общий друг              10 баллов
+        совпадение возраста     7 баллов
+        общая группа            5 баллов
+        совпадение по музыке    3 балла
+        совпадение по книге     2 балла
+        совпадение по интересам 1 балл
+        """
+        kpi = 0
+        try:
+            for friend in self.mutual_friends:
+                kpi += 10
+                print(self.id, ' начислено 10 баллов за общего другана - ', self.mutual_friends)
+        except:
+            pass # нет друзей
+        if self.age == target.age:
+            kpi += 7
+            print(self.id, ' начислено 7 баллов за совпадение по возрасту')
+        # поиск общих групп
+        for group in target.groups:
+            if group in self.groups:
+                kpi += 5
+                print(self.id, ' начислено 5 баллов за общую группу - ', group)
+        # поиск совпадений по музыке
+        pattern = self.music.split()
+        for i in pattern:
+            if i in target.music:
+                print(self.id, ' начислено 3 баллd за совпадение по музыке - ', i)
+
+
 
     def friends(self):
         # возвращает в том порядке, в котором расположены в разделе Мои
@@ -100,7 +140,7 @@ class User():
         else:
             sex_ = 1
         candidates = self.api.users.search(city=self.city['id'], sex=sex_, age_from=self.start_age,
-                                           age_to=self.finish_age, status=[1], count=255)
+                                           age_to=self.finish_age, status=[1], count=25)
         candidates_items = candidates['items']
         print(candidates_items)
         candidates_ = list()
@@ -138,8 +178,8 @@ def prepare_to_search(user):
         print(er, ' - год рождения не указан')
         age = int(input('Введите возраст кандидата: '))
     user.age = age
-    user.start_age = age - 5
-    user.finish_age = age + 5
+    user.start_age = age - 2
+    user.finish_age = age + 2
 
 def get_token():
     pass
@@ -178,8 +218,8 @@ def main():
 
     # user_error = User('askdjfhaskdjfhsakd')
     lapssh = User('stupport', API)
-    lapssh.get_mutual(4298081)
-    print(lapssh.mutual_friends)
+    lapssh.get_mutual(13323484)
+    print(lapssh.mutual_friends, '- общий друг')
 
     #print(lapssh)
     prepare_to_search(lapssh)
@@ -192,7 +232,9 @@ def main():
     for id in res:
         id = User(id, API)
         id.get_mutual(lapssh.id)
-        print(id.age, id.mutual_friends)
+        if id.mutual_friends != [] and id.mutual_friends != False:
+            print(id.id, '- найден общий друг ',id.mutual_friends)
+        id.calc_kpi(lapssh)
         time.sleep(0.4)
 
     # test005.search_users()
