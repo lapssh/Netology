@@ -16,7 +16,6 @@ class User():
         self.get_data()
         self.groups_get()
 
-
     def __str__(self):
         print()
         print(self.id, ' - ')
@@ -67,15 +66,16 @@ class User():
 
     def groups_get(self):
         time.sleep(0.35)
+        print('Получить группы пользователя ', self.id)
         try:
             self.groups = self.api.groups.get(user_id=self.id)['items']
-            print('Получен список групп пользователя', self.id, ' ', self.groups)
+            print('Получен список групп пользователя', self.id, ' ', len(self.groups))
         except Exception as err:
             print(err, ' - при попытке получить группы пользователя')
             self.groups = []
 
     def get_mutual(self, target):
-        #target = int(target)
+        # target = int(target)
         time.sleep(0.4)
         try:
             self.mutual_friends = self.api.friends.getMutual(source_uid=self.id, target_uid=target)
@@ -98,7 +98,7 @@ class User():
                 kpi += 10
                 print(self.id, ' начислено 10 баллов за общего другана - ', self.mutual_friends)
         except:
-            pass # нет друзей
+            pass  # нет друзей
         if self.age == target.age:
             kpi += 7
             print(self.id, ' начислено 7 баллов за совпадение по возрасту')
@@ -109,27 +109,31 @@ class User():
                 print(self.id, ' начислено 5 баллов за общую группу - ', group)
         # поиск совпадений по музыке
         if self.music and target.music:
-            pattern = self.music.split()
+            pattern = self.music.split(',')
             for i in pattern:
-                if len(i)>2:
+                if len(i) > 2:
                     if i in target.music:
+                        kpi += 3
                         print(self.id, ' начислено 3 балл за совпадение по музыке - ', i)
 
         # поиск совпадений по книгам
         if self.books and target.books:
-            pattern = self.books.split()
+            pattern = self.books.split(',')
             for i in pattern:
-                if len(i)>2:
+                if len(i) > 2:
                     if i in target.books:
+                        kpi += 2
                         print(self.id, ' начислено 2 балла за совпадение по книгам - ', i)
 
         # поиск совпадений по интересам
         if self.interests and target.interests:
-            pattern = self.interests.split()
+            pattern = self.interests.split(',')
             for i in pattern:
-                if len(i)>2:
+                if len(i) > 2:
                     if i in target.interests:
+                        kpi += 1
                         print(self.id, ' начислен 1 балл за совпадение по интересам - ', i)
+        self.kpi = kpi
 
     def friends(self):
         # возвращает в том порядке, в котором расположены в разделе Мои
@@ -156,15 +160,18 @@ class User():
         else:
             sex_ = 1
         candidates = self.api.users.search(city=self.city['id'], sex=sex_, age_from=self.start_age,
-                                           age_to=self.finish_age, status=[1], count=10)
+                                           age_to=self.finish_age, status=[1], count=7)
         candidates_items = candidates['items']
-        print(candidates_items)
+        # print(candidates_items)
         candidates_ = list()
         for i in candidates_items:
             candidates_.append(i['id'])
-            print(i['id'], ' - ', i['first_name'], ' ', i['last_name'], ' ', 'https://vk.com/id' + str(i['id']))
             # print(candidates['id'], candidates['last_name'], ' ', candidates['first_name'])
         return candidates_
+
+
+def get_token():
+    pass
 
 
 def auth():
@@ -184,6 +191,7 @@ def auth():
     # self.user_info = self.api.users.get(user_ids=name, fields='bdate, sex, city, books, music, interests')
     return api
 
+
 def prepare_to_search(user):
     """Функция проверяет, все ли обязательные поля заполненны, и просит ввести вручную, если данных нет"""
     try:
@@ -197,31 +205,45 @@ def prepare_to_search(user):
     user.start_age = age - 2
     user.finish_age = age + 2
 
-def get_token():
-    pass
+
+def sort_by_kpi(users_list):
+    kpi_dict = dict()
+    for user in users_list:
+        kpi_dict[user.id] = user.kpi
+    kpi_for_sort = list(kpi_dict.items())
+    kpi_for_sort.sort(key=lambda i: i[1])
+    kpi_for_sort.reverse()
+    return kpi_for_sort
 
 
-def input_id_or_screen_name(api):
-    user_input = 4298081
-    # user_input = input('Введите ID или )
+def get_10_users(users_list):
+    count = 0
+    top_10_users = []
+    for user in users_list:
+        if count == 10:
+            break
+        top_10_users.append(user)
+        count += 1
+    return top_10_users
 
 
-def get_friends_by_id(api, id):
-    print(api.friends.get(user_id=id))
+#
+# def get_friends_by_id(api, id):
+#     print(api.friends.get(user_id=id))
 
-
-def get_info_by_id(api, id):
-    # print(id)
-    user_info = api.users.get(user_ids=id, fields='bdate, sex, home_town, interests')
-    print(user_info)
-    print('пол', user_info[0]['sex'])
-    print('дата рождения: ', user_info[0]['bdate'])
-    print('Расположение: ', user_info[0]['home_town'])
-    print('Интересы: ', user_info[0]['interests'])
-
-    user_groups = api.groups.get(user_id=id)
-
-    print('Состоит в группах: ', user_groups['items'])
+#
+# def get_info_by_id(api, id):
+#     # print(id)
+#     user_info = api.users.get(user_ids=id, fields='bdate, sex, home_town, interests')
+#     print(user_info)
+#     print('пол', user_info[0]['sex'])
+#     print('дата рождения: ', user_info[0]['bdate'])
+#     print('Расположение: ', user_info[0]['home_town'])
+#     print('Интересы: ', user_info[0]['interests'])
+#
+#     user_groups = api.groups.get(user_id=id)
+#
+#     print('Состоит в группах: ', user_groups['items'])
 
 
 def main():
@@ -235,27 +257,30 @@ def main():
     # user_error = User('askdjfhaskdjfhsakd')
     lapssh = User('stupport', API)
     lapssh.get_mutual(13323484)
-    print(lapssh.mutual_friends, '- общий друг')
+    print(lapssh.mutual_friends, '- общие друзья')
 
-    #print(lapssh)
+    # print(lapssh)
     prepare_to_search(lapssh)
-    #test005 = User(4298081, API)  # Отавина
-    #print(test005.age)
-    #exit()
+    # test005 = User(4298081, API)  # Отавина
+    # print(test005.age)
+    # exit()
     res = lapssh.search_users()
-    print(len(res))
-    print(res)
+    base_users = list()
+
     for id in res:
         id = User(id, API)
         id.get_mutual(lapssh.id)
         if id.mutual_friends != [] and id.mutual_friends != False:
-            print(id.id, '- найден общий друг ',id.mutual_friends)
+            print(id.id, '- найден общий друг ', id.mutual_friends)
         id.calc_kpi(lapssh)
+        base_users.append(id)
         time.sleep(0.4)
-
+    print('В базу добавлено ', len(base_users), ' пользователей')
     # test005.search_users()
-    for user in res:
-        print(user.id, user.kpi)
+
+    sorted_users = sort_by_kpi(base_users)
+    top_10 = get_10_users(sorted_users)
+    print(top_10)
 
 
 if __name__ == '__main__':
