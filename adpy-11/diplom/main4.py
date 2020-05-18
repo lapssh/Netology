@@ -4,6 +4,8 @@ from datetime import datetime
 import time
 import operator
 import json
+import sql
+import psycopg2 as pg
 
 
 class User():
@@ -282,18 +284,32 @@ def main():
     API = auth()
 
     target = User(13323484, API)  # Елитенко
+
+
     # target = User(4585441, API) # Маслов
     # target = User('stupport', API)
 
     get_age(target)  # поулчаем возраст цели
-    base_users = get_match_users(target, API)  # получаем список найденных пользтователей
+    base_users = get_match_users(target, API)  # получаем список найденных пользователей
     sorted_users = reversed(sorted(base_users, key=operator.attrgetter('kpi')))  # сортируем по весам
-    top_10 = get_10_users(sorted_users)  # берем 10 наиболее подходящих
-    get_top3_photos(top_10, API)  # нахдоим три залайканых фотографии
 
+
+
+
+    #top_10 = get_10_users(sorted_users)  # берем 10 наиболее подходящих
+    #get_top3_photos(top_10, API)  # нахдоим три залайканых фотографии
+    # result = []
+    # for i in top_10:
+    #     print(i.show_result())
+    #     result.append(i.show_result())
+    #     print('Индекс совпадений: ', i.kpi)
+    #     print('Детализация: ', i.common)
+    # save_result(result)
+
+    get_top3_photos(sorted_users, API)
     # вывод результатов
     result = []
-    for i in top_10:
+    for i in sorted_users:
         print(i.show_result())
         result.append(i.show_result())
         print('Индекс совпадений: ', i.kpi)
