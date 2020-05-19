@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import psycopg2 as pg
 import json
 
@@ -21,6 +19,7 @@ def create_db(target):  # создает таблицы
             );
         """)
         print('Таблица пользователя ', target, ' создана.')
+
 
 def delete_tables():
     # удалить таблицу
@@ -48,12 +47,8 @@ def add_user(user_id, kpi, data):  # добавляет нового польз�
         cur.execute("""
             insert into users_base(user_id, kpi, data, view)
             values (%s, %s, %s, %s);
-        """, (user_id, kpi,  data, False))
-        # for id, values in student.items():
-        #     cur.execute("""
-        #         insert into Student(name, gpa, birth)
-        #         values (%s,%s,%s);
-        #     """, (values[0], values[1], values[2]))
+        """, (user_id, kpi, data, False))
+
 
 def get_one():
     try:
@@ -67,8 +62,7 @@ def get_one():
                 select users_base.data
                 from users_base 
                 WHERE view=FALSE;
-             """ )
-            # one_user = cur.fetchall()
+             """)
             one_user = cur.fetchone()
             tmp = one_user[0]
             tmp = eval(tmp)
@@ -77,8 +71,7 @@ def get_one():
             cur.execute("""
                 UPDATE users_base SET view=TRUE
                 WHERE user_id=%s;
-                """,(id_,))
-    #            WHERE user_id="id";
+                """, (id_,))
     except:
         print('В БД не осталось не просмотренных пользователей!')
         return False

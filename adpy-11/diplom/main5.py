@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 import operator
 import json
+import sql
 
 
 class User():
@@ -53,23 +54,18 @@ class User():
             except:
                 self.age = False
 
-        # except KeyError as key:
-        #     print('У пользователя отсутствует поле', key)
-        # except Exception as er:
-        #     print('Введён неккоректный ID или неккоректное короткое имя.', er)
-
     def groups_get(self):
-        time.sleep(0.35)
+        time.sleep(0.33)
         print('Получить группы пользователя ', self.id)
         try:
             self.groups = self.api.groups.get(user_id=self.id)['items']
             print('Получен список групп пользователя', self.id, ' ', len(self.groups))
         except Exception as err:
-            print(err, ' - при попытке получить группы пользователя')
             self.groups = []
+        return self.groups
 
     def get_mutual(self, target):
-        time.sleep(0.4)
+        time.sleep(0.33)
         try:
             self.mutual_friends = self.api.friends.getMutual(source_uid=self.id, target_uid=target)
         except Exception as err:
@@ -142,10 +138,10 @@ class User():
             sex_ = 1
         if self.city:
             candidates = self.api.users.search(city=self.city['id'], sex=sex_, age_from=self.start_age,
-                                               age_to=self.finish_age, status=[1], count=3)
+                                               age_to=self.finish_age, status=[1], count=50)
         else:
             candidates = self.api.users.search(sex=sex_, age_from=self.start_age,
-                                               age_to=self.finish_age, status=[1], count=3)
+                                               age_to=self.finish_age, status=[1], count=50)
         candidates_items = candidates['items']
         candidates_ = list()
         for i in candidates_items:
@@ -170,30 +166,39 @@ class User():
         answer['url'] = str(self.url)
         answer['photos'] = tmp_list
         self.answer = answer
-        print(type(answer))
-        print(answer)
         return answer
 
 
 def get_token():
-    pass
+    token = input('Введите Ваш ТОКЕН: ')
+    return token
 
 
-def auth():
+def auth(TOKEN):
     """ авторизация в ВК """
-    # try:
-    #     self.session = vk.Session(access_token=TOKEN)
-    #     self.api = vk.API(self.session, v='5.103', lang='ru', timeout=10)
-    #     self.user_info = self.api.users.get(user_ids=name, fields='bdate, sex, city, books, music, interests')
-    #     print('Введенный токен корректен - ', TOKEN)
-    # except:
-    #     self.session = vk.Session(access_token=private_settings.TOKEN)
-    #     self.api = vk.API(self.session, v='5.103', lang='ru', timeout=10)
-    #     self.user_info = self.api.users.get(user_ids=name, fields='bdate, sex, city, books, music, interests')
-    #     print('Введенный токен не подошёл, исопльзую по-умолчанию')
-    session = vk.Session(access_token=private_settings.TOKEN)
-    api = vk.API(session, v='5.103', lang='ru', timeout=10)
+    try:
+        session = vk.Session(access_token=TOKEN)
+        api = vk.API(session, v='5.103', lang='ru', timeout=10)
+        test = api.users.get()
+        print('Введенный токен корректен - ', TOKEN)
+    except:
+        session = vk.Session(access_token=private_settings.TOKEN)
+        api = vk.API(session, v='5.103', lang='ru', timeout=10)
+        print('Введенный токен не подошёл, исопльзую по-умолчанию')
     return api
+
+
+def get_target(api):
+    """ Функция запрашивает id или screen_name пользователя """
+    while True:
+        try:
+            id_or_name = input('Введите ID или Screen Name пользователя: ')
+            test = api.users.get(user_ids=id_or_name)
+            print('Ползователь найден!')
+            print(test)
+            return id_or_name
+        except:
+            print('Пользователь незарегистрирован, повторите ввод!')
 
 
 def get_age(user):
@@ -253,7 +258,6 @@ def get_top3_photos(users, api):
         try:
             result = api.photos.get(user_id=user.id, album_id='profile', extended=1)
         except Exception as err:
-            print(err)
             result = False
 
         if result:
@@ -270,6 +274,7 @@ def find_top3(list):
     top3_photos = photos_sorted[len(photos_sorted) - 3:len(photos_sorted)]
     return top3_photos
 
+
 def save_result(data):
     with open('top_10_users_with_photo.json', 'w', encoding='utf-8') as f:
         data_ = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False, separators=(',', ': '))
@@ -277,31 +282,61 @@ def save_result(data):
     print('Запись результатов в файл завершена.')
 
 
+def show_results():
+    result = get_10_users_from_db()
+    while len(result) == 10:
+        for user in result:
+            print(user)
+        while True:
+            user_asnwer = input('e[X]it: Выход      '
+                                '[S]ave: Сохранить в файл       '
+                                'ENTER: Показать следующих 10 пользователей: ')
+            if user_asnwer in ['X', 'x', 'exit', 'e[X]it', 'EXIT']:
+                print('Заверешение работы программы. Удачной встречи! Будте счастливы! Всего Вам доброго!')
+                exit()
+            elif user_asnwer in ['s', 'S', 'Save', 'SAVE', 'save', '[S]ave']:
+                save_result(result)
+                print('Данные сохранены! Удачной встречи! Будте счастливы! Всего Вам доброго!')
+                exit()
+            elif user_asnwer == '':
+                show_results()
+            else:
+                print('Неправильный ввод! Повторите!')
+    print('до новых встреч')
+    exit()
+
+
+def get_10_users_from_db():
+    users = []
+    for i in range(10):
+        user_ = sql.get_one()
+        if user_ == False:
+            print('Данных не осталось. Работа c БД  завершена')
+            break
+        users.append(user_)
+    return users
+
+
 def main():
     TOKEN = get_token()
-    API = auth()
-
-    target = User(13323484, API)  # Елитенко
-    # target = User(4585441, API) # Маслов
-    # target = User('stupport', API)
-
-    get_age(target)  # поулчаем возраст цели
-    base_users = get_match_users(target, API)  # получаем список найденных пользтователей
+    API = auth(TOKEN)
+    lapssh = User('stupport', API)
+    print(lapssh.groups_get())
+    target_id = get_target(API)
+    target = User(target_id, API)
+    get_age(target)  # получаем возраст цели
+    base_users = get_match_users(target, API)  # получаем список найденных пользователей
+    get_top3_photos(base_users, API)  # сопоставляем три фотограифи
     sorted_users = reversed(sorted(base_users, key=operator.attrgetter('kpi')))  # сортируем по весам
-    top_10 = get_10_users(sorted_users)  # берем 10 наиболее подходящих
-    get_top3_photos(top_10, API)  # нахдоим три залайканых фотографии
+    sql.delete_tables()  # удаляем старые таблицы
+    sql.create_db(target.id)  # создаем новые таблицы
+    for i in sorted_users:
+        temp = i.show_result()
+        print(temp)
+        temp_json = json.dumps(temp)
+        sql.add_user(i.id, i.kpi, temp_json)  # отправляем все, что нашли в БД
 
-    # вывод результатов
-    result = []
-    for i in top_10:
-        print(i.show_result())
-        result.append(i.show_result())
-        print('Индекс совпадений: ', i.kpi)
-        print('Детализация: ', i.common)
-
-    # запись результата в файл
-    save_result(result)
-
+    show_results()  # выводим результат
 
 
 if __name__ == '__main__':
