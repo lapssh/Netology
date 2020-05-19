@@ -67,7 +67,6 @@ class User():
             self.groups = self.api.groups.get(user_id=self.id)['items']
             print('Получен список групп пользователя', self.id, ' ', len(self.groups))
         except Exception as err:
-            print(err, ' - при попытке получить группы пользователя')
             self.groups = []
 
     def get_mutual(self, target):
@@ -144,10 +143,10 @@ class User():
             sex_ = 1
         if self.city:
             candidates = self.api.users.search(city=self.city['id'], sex=sex_, age_from=self.start_age,
-                                               age_to=self.finish_age, status=[1], count=3)
+                                               age_to=self.finish_age, status=[1], count=23)
         else:
             candidates = self.api.users.search(sex=sex_, age_from=self.start_age,
-                                               age_to=self.finish_age, status=[1], count=3)
+                                               age_to=self.finish_age, status=[1], count=23)
         candidates_items = candidates['items']
         candidates_ = list()
         for i in candidates_items:
@@ -172,8 +171,6 @@ class User():
         answer['url'] = str(self.url)
         answer['photos'] = tmp_list
         self.answer = answer
-        print(type(answer))
-        print(answer)
         return answer
 
 
@@ -273,27 +270,94 @@ def find_top3(list):
     return top3_photos
 
 def save_result(data):
+    print('Прилетело из БД')
+    print(data)
+
+
     with open('top_10_users_with_photo.json', 'w', encoding='utf-8') as f:
         data_ = json.dumps(data, sort_keys=False, indent=4, ensure_ascii=False, separators=(',', ': '))
         f.write(data_)
+        # for line in data:
+        #     f.write(line[0] + '\n')
     print('Запись результатов в файл завершена.')
 
+def show_results():
+    result = get_10_users_from_db()
+    print('Мой резалт', result)
+    while len(result) == 10:
+        for user in result:
+            print(user)
+        while True:
+            user_asnwer = input('e[X]it: Выход      '
+                                '[S]ave: Сохранить в файл       '
+                                'ENTER: Показать следующих 10 пользователей: ')
+            if user_asnwer in ['X', 'x', 'exit', 'e[X]it', 'EXIT']:
+                print('Заверешение работы программы. Удачной встречи! Будте счастливы! Всего Вам доброго!')
+                exit()
+            elif user_asnwer in ['s', 'S', 'Save', 'SAVE', 'save', '[S]ave']:
+                save_result(result)
+                print('Данные сохранены! Удачной встречи! Будте счастливы! Всего Вам доброго!')
+                exit()
+            elif user_asnwer == '':
+                show_results()
+            else:
+                print('Неправильный ввод! Повторите!')
+    print('до новых встреч')
+    exit()
+
+
+def get_10_users_from_db():
+    users = []
+    for i in range (10):
+        user_ = sql.get_one()
+        if user_ == False:
+            print('Данных не осталось. Работа c БД  завершена')
+            break
+        users.append(user_)
+    print('проверим работу getusers')
+    print(users)
+    return users
 
 def main():
+
+    # one = sql.get_one()
+    # print(one)
+    # one = sql.get_one()
+    # print(one)
+    # exit()
+
+
     TOKEN = get_token()
     API = auth()
 
     target = User(13323484, API)  # Елитенко
-
 
     # target = User(4585441, API) # Маслов
     # target = User('stupport', API)
 
     get_age(target)  # поулчаем возраст цели
     base_users = get_match_users(target, API)  # получаем список найденных пользователей
+    get_top3_photos(base_users, API)
+
     sorted_users = reversed(sorted(base_users, key=operator.attrgetter('kpi')))  # сортируем по весам
+    sql.delete_tables()
+    sql.create_db(target.id)
+    for i in sorted_users:
+        temp = i.show_result()
+        print(temp)
+        temp_json = json.dumps(temp)
+        sql.add_user(i.id, i.kpi, temp_json)
+        #print(temp['url'])
 
+    show_results()
 
+    # тут всё сломалось
+    # print('тут пиздец')
+    # get_top3_photos(sorted_users, API)
+    #
+    # for i in sorted_users:
+    #     print(i)
+    #     print(i.id, i.kpi)
 
 
     #top_10 = get_10_users(sorted_users)  # берем 10 наиболее подходящих
@@ -306,17 +370,9 @@ def main():
     #     print('Детализация: ', i.common)
     # save_result(result)
 
-    get_top3_photos(sorted_users, API)
+    #get_top3_photos(sorted_users, API)
     # вывод результатов
-    result = []
-    for i in sorted_users:
-        print(i.show_result())
-        result.append(i.show_result())
-        print('Индекс совпадений: ', i.kpi)
-        print('Детализация: ', i.common)
 
-    # запись результата в файл
-    save_result(result)
 
 
 
