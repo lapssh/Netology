@@ -1,5 +1,23 @@
 import psycopg2 as pg
-import json
+import os
+
+
+def get_db_status():  # Проверка доступности БД
+    try:
+        with pg.connect(
+                dbname='hw_postgresql',
+                user='test',
+                password='1234'
+        ) as conn:
+            print('Соединение с БД успешно установленно.')
+            return True
+    except:
+        print('БД недоступна.')
+        try:
+            os.remove('fdatabase.txt')  # чистим место под новый запрос
+        except:
+            pass  # файл для удаления не найден
+        return False
 
 
 def create_db(target):  # создает таблицы
